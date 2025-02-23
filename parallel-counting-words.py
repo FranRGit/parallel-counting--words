@@ -33,17 +33,15 @@ def parallel_word_count(folder, num_workers):
     file_list = [os.path.join(folder, f) for f in os.listdir(folder) if f.endswith(".txt")]
 
     # <----------------PARTITION STAGE-------------------->
-    chunk_size = max(1, len(file_list) // num_workers)
+    chunks = [file_list[i::num_workers] for i in range(num_workers)]
 
     # <----------------COMUNICATION STAGE-------------------->
     result_queue = mp.Queue()
     processes = []
 
-    for i in range(num_workers):
-        start = i * chunk_size
-        end = min((i + 1) * chunk_size, len(file_list))
+    for chunk in chunks:
         # <----------------MAPPING STAGE-------------------->
-        p = mp.Process(target=count_words_in_files, args=(file_list[start:end], result_queue))
+        p = mp.Process(target=count_words_in_files, args=(chunk, result_queue))
         processes.append(p)
         p.start()
 
@@ -61,11 +59,11 @@ def parallel_word_count(folder, num_workers):
 
 if __name__ == "__main__":
     num_workers = mp.cpu_count()
-    folder_path = "C:\\Users\\USUARIO\\Complementos\\Desarrollo\\Resources programacion\\Parallel programming\\Parallel Program\\texts"
-    
+    folder_path = os.path.join(os.path.dirname(__file__), "texts")
+
     #Time Sequential
     start_seq = time.time()
-    sequential_results = sequential_word_count(folder_path)
+    sequential_results  = sequential_word_count(folder_path)
     end_seq = time.time()
     sequential_time = end_seq - start_seq
     
@@ -75,8 +73,17 @@ if __name__ == "__main__":
     end_par = time.time()
     parallel_time = end_par - start_par
 
+    total_words_sequential = sum(sequential_results.values())
+    total_words_parallel = sum(parallel_results.values())
+
+
     #Results
     print("\nExecution time:")
     print(f"Sequential: {sequential_time:.4f} sec")
     print(f"Parallel: {parallel_time:.4f} sec")
     print(f"Speedup: {sequential_time / parallel_time:.2f}")
+    
+    # Mostrar cantidad de palabras contadas
+    print("\nResultados del Conteo de Palabras:")
+    print(f"Total de palabras (secuencial): {total_words_sequential}")
+    print(f"Total de palabras (paralelo): {total_words_parallel}")
