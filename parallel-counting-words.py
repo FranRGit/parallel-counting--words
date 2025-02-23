@@ -76,14 +76,11 @@ if __name__ == "__main__":
     total_words_sequential = sum(sequential_results.values())
     total_words_parallel = sum(parallel_results.values())
 
-
     #Results
     print("\nExecution time:")
     print(f"Sequential: {sequential_time:.4f} sec")
     print(f"Parallel: {parallel_time:.4f} sec")
     print(f"Speedup: {sequential_time / parallel_time:.2f}")
     
-    # Mostrar cantidad de palabras contadas
-    print("\nResultados del Conteo de Palabras:")
-    print(f"Total de palabras (secuencial): {total_words_sequential}")
-    print(f"Total de palabras (paralelo): {total_words_parallel}")
+    print(f"Total words (sequential): {total_words_sequential}")
+    print(f"Total words (parallel): {total_words_parallel}")
